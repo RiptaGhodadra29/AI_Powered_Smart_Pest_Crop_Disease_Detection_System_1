@@ -201,6 +201,45 @@
   .pause-on-hover:hover {
     animation-play-state: paused;
   }
+
+  /* Decorative background textures (layered behind content for depth). */
+  .bg-dot-grid {
+    background-image: radial-gradient(
+      circle,
+      rgb(16 24 40 / 0.05) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
+  }
+
+  .bg-grid-lines {
+    background-image: linear-gradient(
+        to right,
+        rgb(16 24 40 / 0.04) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgb(16 24 40 / 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .bg-leaf-pattern {
+    background-image: url("/leaf-pattern.svg");
+    background-size: 220px 220px;
+  }
+
+  /* Fades a tiled texture out toward the edges so it never looks like a hard grid. */
+  .mask-fade {
+    -webkit-mask-image: radial-gradient(
+      ellipse 80% 80% at 50% 0%,
+      #000 40%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      ellipse 80% 80% at 50% 0%,
+      #000 40%,
+      transparent 100%
+    );
+  }
 }
 
 /* Respect users who prefer reduced motion: disable all motion app-wide. */
