@@ -29,9 +29,10 @@ const Home = () => {
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-neutral-200 bg-gradient-to-b from-brand-50 to-neutral-50">
+      <section className="relative overflow-hidden border-b border-neutral-200 bg-gradient-to-br from-brand-50 via-white to-emerald-50">
         {/* Animated aurora background — purely decorative, GPU-only transforms. */}
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="bg-leaf-pattern mask-fade absolute inset-0 opacity-50" />
           <div className="animate-aurora absolute -left-24 -top-32 h-80 w-80 rounded-full bg-brand-300/40 blur-3xl" />
           <div className="animate-float-slow absolute right-[-6rem] top-10 h-72 w-72 rounded-full bg-emerald-200/50 blur-3xl" />
           <div className="animate-float absolute bottom-[-5rem] left-1/3 h-64 w-64 rounded-full bg-brand-200/40 blur-3xl" />
