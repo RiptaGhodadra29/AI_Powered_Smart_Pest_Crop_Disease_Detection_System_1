@@ -8,6 +8,7 @@ import PredictionResult from "../pages/PredictionResult/PredictionResult";
 import Recommendation from "../pages/Recommendation/Recommendation";
 import ProtectedRoute from "./ProtectedRoute";
 import History from "../pages/History/History";
+import PredictionDetail from "../pages/PredictionDetail/PredictionDetail";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -28,6 +29,8 @@ const AppRoutes = () => {
       <Route path="/prediction-result" element={ <ProtectedRoute> <PredictionResult /> </ProtectedRoute> } />
      
       <Route path="/history" element={ <ProtectedRoute> <History /> </ProtectedRoute> } />
+
+      <Route path="/history/:id" element={ <ProtectedRoute> <PredictionDetail /> </ProtectedRoute> } />
 
       <Route path="/recommendation" element={<Recommendation />} />
 

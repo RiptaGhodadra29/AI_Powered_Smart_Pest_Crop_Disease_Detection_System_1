@@ -57,7 +57,7 @@ const Navbar = () => {
   const closeMenu = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-brand-800/40 bg-brand-700 text-white shadow-soft">
+    <header className="sticky top-0 z-50 border-b border-brand-800/40 bg-brand-700 text-white shadow-soft print:hidden">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         {/* Brand */}
         <Link

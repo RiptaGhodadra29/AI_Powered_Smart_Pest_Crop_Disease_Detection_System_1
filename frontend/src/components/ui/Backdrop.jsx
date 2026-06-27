@@ -11,7 +11,7 @@
 const Backdrop = () => (
   <div
     aria-hidden="true"
-    className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-neutral-100"
+    className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-neutral-100 print:hidden"
   >
     <div className="bg-dot-grid absolute inset-0" />
     <div className="bg-leaf-pattern mask-fade absolute inset-0 opacity-100" />
