@@ -3,29 +3,29 @@ import Button from "../../components/ui/Button";
 import Icon from "../../components/ui/Icon";
 import { Card } from "../../components/ui/Card";
 import Reveal from "../../components/ui/Reveal";
-
-const steps = [
-  {
-    icon: "upload",
-    title: "Upload leaf image",
-    description:
-      "Snap or upload a clear photo of the affected crop leaf or pest.",
-  },
-  {
-    icon: "microscope",
-    title: "AI detects the issue",
-    description:
-      "Our model analyses the image and identifies the disease or pest with a confidence score.",
-  },
-  {
-    icon: "clipboard",
-    title: "Get a treatment plan",
-    description:
-      "Receive tailored organic and chemical recommendations to act fast.",
-  },
-];
+import { useLanguage } from "../../context/LanguageContext";
 
 const Home = () => {
+  const { t } = useLanguage();
+
+  const steps = [
+    {
+      icon: "upload",
+      title: t.home_step1_title,
+      description: t.home_step1_desc,
+    },
+    {
+      icon: "microscope",
+      title: t.home_step2_title,
+      description: t.home_step2_desc,
+    },
+    {
+      icon: "clipboard",
+      title: t.home_step3_title,
+      description: t.home_step3_desc,
+    },
+  ];
+
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero */}
@@ -44,21 +44,20 @@ const Home = () => {
               <span className="animate-pulse-ring absolute inline-flex h-full w-full rounded-full bg-brand-500" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
             </span>
-            AI-powered crop health
+            {t.home_badge}
           </span>
 
           <h1 className="animate-rise text-balance text-4xl font-bold tracking-tight text-neutral-900 [animation-delay:140ms] sm:text-5xl lg:text-6xl">
-            Smart Pest &amp; Crop Disease Detection
+            {t.home_title}
           </h1>
 
           <p className="animate-rise mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-neutral-600 [animation-delay:240ms]">
-            Upload a crop leaf image and get instant, AI-powered disease
-            detection paired with actionable treatment recommendations.
+            {t.home_subtitle}
           </p>
 
           <div className="animate-rise mt-9 flex flex-col items-center gap-3 [animation-delay:340ms] sm:flex-row">
             <Button as={Link} to="/upload" size="lg" className="w-full sm:w-auto">
-              Get started
+              {t.home_getStarted}
               <Icon
                 name="arrowRight"
                 className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
@@ -72,7 +71,7 @@ const Home = () => {
               className="w-full sm:w-auto"
             >
               <Icon name="dashboard" className="h-4 w-4" />
-              View dashboard
+              {t.home_viewDashboard}
             </Button>
           </div>
         </div>
@@ -82,10 +81,10 @@ const Home = () => {
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <Reveal className="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
           <h2 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
-            How it works
+            {t.home_howTitle}
           </h2>
           <p className="mt-3 text-neutral-600">
-            From photo to plan in three simple steps.
+            {t.home_howSubtitle}
           </p>
         </Reveal>
 

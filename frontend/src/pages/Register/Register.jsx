@@ -7,9 +7,11 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Icon from "../../components/ui/Icon";
 import { Card } from "../../components/ui/Card";
+import { useLanguage } from "../../context/LanguageContext";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -32,11 +34,11 @@ const Register = () => {
     try {
       await registerUser(formData);
 
-      toast.success("Registration successful!");
+      toast.success(t.register_success);
 
       navigate("/login");
     } catch (error) {
-      toast.error("Registration failed!");
+      toast.error(t.register_error);
 
       console.error(error);
     } finally {
@@ -52,17 +54,17 @@ const Register = () => {
             <Icon name="leaf" className="h-6 w-6" />
           </span>
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-neutral-900">
-            Create your account
+            {t.register_title}
           </h1>
           <p className="mt-1.5 text-sm text-neutral-500">
-            Start detecting crop diseases in seconds
+            {t.register_subtitle}
           </p>
         </div>
 
         <Card className="p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             <Input
-              label="Username"
+              label={t.register_username}
               type="text"
               name="username"
               autoComplete="username"
@@ -73,7 +75,7 @@ const Register = () => {
             />
 
             <Input
-              label="Email"
+              label={t.register_email}
               type="email"
               name="email"
               autoComplete="email"
@@ -84,7 +86,7 @@ const Register = () => {
             />
 
             <Input
-              label="Password"
+              label={t.register_password}
               type="password"
               name="password"
               autoComplete="new-password"
@@ -100,18 +102,18 @@ const Register = () => {
               loading={submitting}
               className="w-full"
             >
-              {submitting ? "Creating account…" : "Create account"}
+              {submitting ? t.register_submitting : t.register_submit}
             </Button>
           </form>
         </Card>
 
         <p className="mt-6 text-center text-sm text-neutral-500">
-          Already have an account?{" "}
+          {t.register_haveAccount}{" "}
           <Link
             to="/login"
             className="font-semibold text-brand-700 underline-offset-4 hover:underline"
           >
-            Sign in
+            {t.register_signIn}
           </Link>
         </p>
       </div>

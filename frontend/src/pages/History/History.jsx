@@ -17,14 +17,9 @@ import Skeleton from "../../components/ui/Skeleton";
 import EmptyState from "../../components/ui/EmptyState";
 import AnimatedBar from "../../components/ui/AnimatedBar";
 import { cn } from "../../components/ui/cn";
+import { useLanguage } from "../../context/LanguageContext";
 
-const columns = ["ID", "Type", "Prediction", "Confidence", "Model", "Date", ""];
 const PAGE_SIZE = 8;
-const filters = [
-  { key: "all", label: "All" },
-  { key: "disease", label: "Disease" },
-  { key: "pest", label: "Pest" },
-];
 
 const ConfidenceCell = ({ value }) => {
   const n = Number(value);
@@ -50,6 +45,22 @@ const ConfidenceCell = ({ value }) => {
 
 const History = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  const columns = [
+    t.history_col_id,
+    t.history_col_type,
+    t.history_col_prediction,
+    t.history_col_confidence,
+    t.history_col_model,
+    t.history_col_date,
+    "",
+  ];
+  const filters = [
+    { key: "all", label: t.history_filterAll },
+    { key: "disease", label: t.disease },
+    { key: "pest", label: t.pest },
+  ];
 
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,17 +121,16 @@ const History = () => {
 
   const handleDelete = async (e, id) => {
     e.stopPropagation();
-    if (!window.confirm("Delete this prediction? This cannot be undone."))
-      return;
+    if (!window.confirm(t.detail_confirmDelete)) return;
 
     setDeletingId(id);
     try {
       await deletePrediction(id);
       setHistory((prev) => prev.filter((p) => p.prediction_id !== id));
-      toast.success("Prediction deleted");
+      toast.success(t.detail_deleted);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete prediction");
+      toast.error(t.detail_deleteFailed);
     } finally {
       setDeletingId(null);
     }
@@ -128,7 +138,7 @@ const History = () => {
 
   const handleExport = () => {
     if (filtered.length === 0) {
-      toast.info("Nothing to export");
+      toast.info(t.history_nothingToExport);
       return;
     }
     exportToCsv(
@@ -144,23 +154,23 @@ const History = () => {
           : "",
       })),
       [
-        { key: "id", label: "ID" },
-        { key: "type", label: "Type" },
-        { key: "prediction", label: "Prediction" },
-        { key: "confidence", label: "Confidence (%)" },
-        { key: "model", label: "Model" },
-        { key: "date", label: "Date" },
+        { key: "id", label: t.history_col_id },
+        { key: "type", label: t.history_col_type },
+        { key: "prediction", label: t.history_col_prediction },
+        { key: "confidence", label: `${t.history_col_confidence} (%)` },
+        { key: "model", label: t.history_col_model },
+        { key: "date", label: t.history_col_date },
       ]
     );
-    toast.success("Exported to CSV");
+    toast.success(t.history_exported);
   };
 
   return (
     <Page width="xl">
       <PageHeader
-        eyebrow="Activity"
-        title="Prediction history"
-        description="Search, filter and manage your past pest and disease detections."
+        eyebrow={t.history_eyebrow}
+        title={t.history_title}
+        description={t.history_description}
         action={
           <Button
             variant="secondary"
@@ -168,7 +178,7 @@ const History = () => {
             disabled={loading || filtered.length === 0}
           >
             <Icon name="download" className="h-4 w-4" />
-            Export CSV
+            {t.history_exportCsv}
           </Button>
         }
       />
@@ -184,8 +194,8 @@ const History = () => {
             type="search"
             value={query}
             onChange={(e) => handleQueryChange(e.target.value)}
-            placeholder="Search prediction or model…"
-            aria-label="Search history"
+            placeholder={t.history_searchPlaceholder}
+            aria-label={t.history_searchPlaceholder}
             className="h-10 w-full rounded-xl border border-neutral-200 bg-white pl-9 pr-3 text-sm text-neutral-900 shadow-soft transition-all duration-200 placeholder:text-neutral-400 hover:border-neutral-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
           />
         </div>
@@ -193,7 +203,7 @@ const History = () => {
         {/* Segmented type filter */}
         <div
           role="tablist"
-          aria-label="Filter by type"
+          aria-label={t.history_col_type}
           className="inline-flex rounded-xl border border-neutral-200 bg-white p-1 shadow-soft"
         >
           {filters.map((f) => {
@@ -271,9 +281,7 @@ const History = () => {
                             />
                           }
                         >
-                          <span className="capitalize">
-                            {item.prediction_type}
-                          </span>
+                          {isPest ? t.pest : t.disease}
                         </Badge>
                       </td>
                       <td className="px-5 py-4 font-medium text-neutral-900">
@@ -296,7 +304,7 @@ const History = () => {
                             handleDelete(e, item.prediction_id)
                           }
                           disabled={deletingId === item.prediction_id}
-                          aria-label={`Delete prediction ${item.prediction_id}`}
+                          aria-label={`${t.delete} #${item.prediction_id}`}
                           className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
                         >
                           <Icon name="trash" className="h-4 w-4" />
@@ -312,13 +320,13 @@ const History = () => {
                       icon="history"
                       title={
                         history.length === 0
-                          ? "No prediction history yet"
-                          : "No results match your filters"
+                          ? t.history_empty_title
+                          : t.history_noResults_title
                       }
                       description={
                         history.length === 0
-                          ? "Once you run a detection, your results will appear here."
-                          : "Try a different search term or filter."
+                          ? t.history_empty_desc
+                          : t.history_noResults_desc
                       }
                     />
                   </td>
@@ -332,12 +340,12 @@ const History = () => {
         {!loading && filtered.length > 0 && (
           <div className="flex items-center justify-between gap-4 border-t border-neutral-100 px-5 py-3.5">
             <p className="text-sm text-neutral-500">
-              Showing{" "}
+              {t.showing}{" "}
               <span className="font-medium text-neutral-700">
                 {(currentPage - 1) * PAGE_SIZE + 1}–
                 {Math.min(currentPage * PAGE_SIZE, filtered.length)}
               </span>{" "}
-              of{" "}
+              {t.of}{" "}
               <span className="font-medium text-neutral-700">
                 {filtered.length}
               </span>
@@ -346,7 +354,7 @@ const History = () => {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                aria-label="Previous page"
+                aria-label={t.history_prevPage}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Icon name="chevronLeft" className="h-4 w-4" />
@@ -357,7 +365,7 @@ const History = () => {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                aria-label="Next page"
+                aria-label={t.history_nextPage}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Icon name="chevronRight" className="h-4 w-4" />

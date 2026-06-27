@@ -9,6 +9,7 @@ import EmptyState from "../../components/ui/EmptyState";
 import Reveal from "../../components/ui/Reveal";
 import AnimatedBar from "../../components/ui/AnimatedBar";
 import { useCountUp } from "../../hooks/useCountUp";
+import { useLanguage } from "../../context/LanguageContext";
 
 const severityTone = (value) => {
   const v = String(value || "").toLowerCase();
@@ -33,22 +34,18 @@ const barColor = {
   neutral: "bg-neutral-400",
 };
 
-const ConfidenceMeter = ({ value, tone }) => {
+const ConfidenceMeter = ({ value, tone, label = "Confidence" }) => {
   const count = useCountUp(value, { duration: 1200 });
 
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between text-sm">
-        <span className="font-medium text-neutral-600">Confidence</span>
+        <span className="font-medium text-neutral-600">{label}</span>
         <span className="font-semibold tabular-nums text-neutral-900">
           {count}%
         </span>
       </div>
-      <AnimatedBar
-        value={value}
-        label="Prediction confidence"
-        barClassName={barColor[tone]}
-      />
+      <AnimatedBar value={value} label={label} barClassName={barColor[tone]} />
     </div>
   );
 };
@@ -71,6 +68,7 @@ const DetailRow = ({ icon, label, children }) => (
 
 const PredictionResult = () => {
   const location = useLocation();
+  const { t } = useLanguage();
   const pageData = location.state;
 
   if (!pageData) {
@@ -79,12 +77,12 @@ const PredictionResult = () => {
         <Card>
           <EmptyState
             icon="alert"
-            title="No prediction result available"
-            description="Upload an image to run a detection and view its results here."
+            title={t.result_empty_title}
+            description={t.result_empty_desc}
             action={
               <Button as={Link} to="/upload">
                 <Icon name="upload" className="h-4 w-4" />
-                Go to Upload
+                {t.goToUpload}
               </Button>
             }
           />
@@ -102,12 +100,12 @@ const PredictionResult = () => {
   return (
     <Page width="lg">
       <PageHeader
-        eyebrow="Result"
-        title="Prediction result"
+        eyebrow={t.result_eyebrow}
+        title={t.result_title}
         action={
           <Button as={Link} to="/upload" variant="secondary">
             <Icon name="upload" className="h-4 w-4" />
-            New prediction
+            {t.result_newPrediction}
           </Button>
         }
       />
@@ -130,9 +128,11 @@ const PredictionResult = () => {
               )}
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-neutral-500">Analysis type</span>
+                <span className="text-sm text-neutral-500">
+                  {t.result_analysisType}
+                </span>
                 <Badge tone={isPest ? "warning" : "brand"} icon={<Icon name={isPest ? "bug" : "leaf"} className="h-3.5 w-3.5" />}>
-                  {isPest ? "Pest" : "Disease"}
+                  {isPest ? t.pest : t.disease}
                 </Badge>
               </div>
             </CardBody>
@@ -145,12 +145,12 @@ const PredictionResult = () => {
           <Card>
             <CardHeader
               icon={<Icon name={isPest ? "bug" : "microscope"} className="h-5 w-5" />}
-              title={isPest ? "Pest detection" : "Disease prediction"}
+              title={isPest ? t.result_pestDetection : t.result_diseasePrediction}
             />
             <CardBody className="space-y-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
-                  {isPest ? "Pest" : "Disease"}
+                  {isPest ? t.pest : t.disease}
                 </p>
                 <p className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">
                   {pageData.prediction_name}
@@ -158,12 +158,16 @@ const PredictionResult = () => {
               </div>
 
               {/* Confidence */}
-              <ConfidenceMeter value={pageData.confidence} tone={confTone} />
+              <ConfidenceMeter
+                value={pageData.confidence}
+                tone={confTone}
+                label={t.result_confidence}
+              />
 
               <div className="flex flex-wrap gap-2">
                 {pageData.confidence_level && (
                   <Badge tone={confTone}>
-                    Quality: {pageData.confidence_level}
+                    {t.result_quality}: {pageData.confidence_level}
                   </Badge>
                 )}
                 {pageData.model_name && (
@@ -181,16 +185,16 @@ const PredictionResult = () => {
             <Card>
               <CardHeader
                 icon={<Icon name="clipboard" className="h-5 w-5" />}
-                title="Recommendation"
-                description="Suggested actions based on the detection."
+                title={t.result_recommendation}
+                description={t.result_recommendationDesc}
               />
               <CardBody>
                 <dl>
-                  <DetailRow icon={isPest ? "bug" : "leaf"} label={isPest ? "Pest" : "Disease"}>
+                  <DetailRow icon={isPest ? "bug" : "leaf"} label={isPest ? t.pest : t.disease}>
                     {recommendation.pest_name || recommendation.disease_name}
                   </DetailRow>
 
-                  <DetailRow icon="alert" label="Severity">
+                  <DetailRow icon="alert" label={t.result_severity}>
                     <Badge
                       tone={severityTone(
                         recommendation.damage_severity || recommendation.severity
@@ -200,34 +204,34 @@ const PredictionResult = () => {
                     </Badge>
                   </DetailRow>
 
-                  <DetailRow icon="fileText" label="Description">
+                  <DetailRow icon="fileText" label={t.result_descriptionLabel}>
                     {recommendation.description}
                   </DetailRow>
 
-                  <DetailRow icon="shield" label="Treatment">
+                  <DetailRow icon="shield" label={t.result_treatment}>
                     {recommendation.treatment || recommendation.organic_control}
                   </DetailRow>
 
                   {recommendation.organic_treatment && (
-                    <DetailRow icon="leaf" label="Organic treatment">
+                    <DetailRow icon="leaf" label={t.result_organicTreatment}>
                       {recommendation.organic_treatment}
                     </DetailRow>
                   )}
 
                   {recommendation.chemical_treatment && (
-                    <DetailRow icon="beaker" label="Chemical treatment">
+                    <DetailRow icon="beaker" label={t.result_chemicalTreatment}>
                       {recommendation.chemical_treatment}
                     </DetailRow>
                   )}
 
                   {recommendation.preventive_measures && (
-                    <DetailRow icon="shield" label="Preventive measures">
+                    <DetailRow icon="shield" label={t.result_preventiveMeasures}>
                       {recommendation.preventive_measures}
                     </DetailRow>
                   )}
 
                   {recommendation.monitoring_actions && (
-                    <DetailRow icon="eye" label="Monitoring actions">
+                    <DetailRow icon="eye" label={t.result_monitoringActions}>
                       {recommendation.monitoring_actions}
                     </DetailRow>
                   )}

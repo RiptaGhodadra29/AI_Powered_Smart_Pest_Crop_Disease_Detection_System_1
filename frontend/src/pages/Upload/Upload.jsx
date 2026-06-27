@@ -11,24 +11,26 @@ import Button from "../../components/ui/Button";
 import Icon from "../../components/ui/Icon";
 import Badge from "../../components/ui/Badge";
 import { cn } from "../../components/ui/cn";
-
-const imageTypes = [
-  {
-    value: "disease",
-    label: "Disease",
-    description: "Leaf / plant disease",
-    icon: "leaf",
-  },
-  {
-    value: "pest",
-    label: "Pest",
-    description: "Insect / pest damage",
-    icon: "bug",
-  },
-];
+import { useLanguage } from "../../context/LanguageContext";
 
 const Upload = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  const imageTypes = [
+    {
+      value: "disease",
+      label: t.disease,
+      description: t.upload_disease_desc,
+      icon: "leaf",
+    },
+    {
+      value: "pest",
+      label: t.pest,
+      description: t.upload_pest_desc,
+      icon: "bug",
+    },
+  ];
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -48,7 +50,7 @@ const Upload = () => {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      toast.error("Please select an image");
+      toast.error(t.upload_selectError);
       return;
     }
 
@@ -63,7 +65,7 @@ const Upload = () => {
       // AI Router Prediction
       const result = await routerPredict(uploadResponse.image_id, imageType);
 
-      toast.success("Prediction completed successfully!");
+      toast.success(t.upload_success);
 
       navigate("/prediction-result", {
         state: {
@@ -74,7 +76,7 @@ const Upload = () => {
     } catch (error) {
       console.error(error);
 
-      toast.error("Prediction failed!");
+      toast.error(t.upload_error);
     } finally {
       setLoading(false);
     }
@@ -83,9 +85,9 @@ const Upload = () => {
   return (
     <Page width="lg">
       <PageHeader
-        eyebrow="Detection"
-        title="Upload crop image"
-        description="Upload a clear photo of the affected leaf or pest, choose the analysis type, and let the AI do the rest."
+        eyebrow={t.upload_eyebrow}
+        title={t.upload_title}
+        description={t.upload_description}
       />
 
       <div className="grid gap-6 lg:grid-cols-5">
@@ -94,8 +96,8 @@ const Upload = () => {
           <Card>
             <CardHeader
               icon={<Icon name="image" className="h-5 w-5" />}
-              title="1. Choose an image"
-              description="PNG or JPG of a single leaf or pest works best."
+              title={t.upload_step1_title}
+              description={t.upload_step1_desc}
             />
             <CardBody>
               <label
@@ -109,10 +111,10 @@ const Upload = () => {
                   <Icon name="upload" className="h-6 w-6" />
                 </span>
                 <span className="text-sm font-semibold text-neutral-800">
-                  Click to upload an image
+                  {t.upload_clickToUpload}
                 </span>
                 <span className="text-xs text-neutral-500">
-                  {selectedFile ? selectedFile.name : "or drag a file here"}
+                  {selectedFile ? selectedFile.name : t.upload_dragHere}
                 </span>
                 <input
                   id="crop-image"
@@ -128,12 +130,12 @@ const Upload = () => {
           <Card>
             <CardHeader
               icon={<Icon name="layers" className="h-5 w-5" />}
-              title="2. Select analysis type"
-              description="Tell the model what to look for."
+              title={t.upload_step2_title}
+              description={t.upload_step2_desc}
             />
             <CardBody>
               <fieldset>
-                <legend className="sr-only">Image type</legend>
+                <legend className="sr-only">{t.upload_step2_title}</legend>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {imageTypes.map((type) => {
                     const active = imageType === type.value;
@@ -192,7 +194,7 @@ const Upload = () => {
                 size="lg"
                 className="mt-6 w-full"
               >
-                {loading ? "Processing…" : "Upload & Predict"}
+                {loading ? t.upload_processing : t.upload_submit}
                 {!loading && <Icon name="arrowRight" className="h-4 w-4" />}
               </Button>
             </CardBody>
@@ -204,7 +206,7 @@ const Upload = () => {
           <Card className="lg:sticky lg:top-24">
             <CardHeader
               icon={<Icon name="eye" className="h-5 w-5" />}
-              title="Preview"
+              title={t.upload_preview}
             />
             <CardBody className="space-y-4">
               {preview ? (
@@ -217,7 +219,7 @@ const Upload = () => {
               ) : (
                 <div className="flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-neutral-200 bg-neutral-50 text-neutral-400">
                   <Icon name="image" className="h-8 w-8" />
-                  <span className="text-xs">No image selected</span>
+                  <span className="text-xs">{t.upload_noImage}</span>
                 </div>
               )}
 
@@ -225,18 +227,18 @@ const Upload = () => {
                 <div className="animate-rise space-y-2 rounded-xl bg-neutral-50 p-4">
                   <div className="flex items-center gap-2">
                     <Badge tone="success" icon={<Icon name="check" className="h-3.5 w-3.5" />}>
-                      Uploaded
+                      {t.upload_uploaded}
                     </Badge>
                   </div>
                   <dl className="space-y-1.5 text-sm">
                     <div className="flex justify-between gap-3">
-                      <dt className="text-neutral-500">Image ID</dt>
+                      <dt className="text-neutral-500">{t.upload_imageId}</dt>
                       <dd className="truncate font-medium text-neutral-900">
                         {uploadResult.image_id}
                       </dd>
                     </div>
                     <div className="flex justify-between gap-3">
-                      <dt className="text-neutral-500">Image name</dt>
+                      <dt className="text-neutral-500">{t.upload_imageName}</dt>
                       <dd className="truncate font-medium text-neutral-900">
                         {uploadResult.image_name}
                       </dd>

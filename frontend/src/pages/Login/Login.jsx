@@ -8,10 +8,12 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Icon from "../../components/ui/Icon";
 import { Card } from "../../components/ui/Card";
+import { useLanguage } from "../../context/LanguageContext";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useLanguage();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -35,11 +37,11 @@ const Login = () => {
 
       login(data.access_token);
 
-      toast.success("Login successful!");
+      toast.success(t.login_success);
 
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Invalid credentials!");
+      toast.error(t.login_error);
 
       console.error(error);
     } finally {
@@ -55,17 +57,17 @@ const Login = () => {
             <Icon name="leaf" className="h-6 w-6" />
           </span>
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-neutral-900">
-            Welcome back
+            {t.login_title}
           </h1>
           <p className="mt-1.5 text-sm text-neutral-500">
-            Sign in to continue to Crop Disease AI
+            {t.login_subtitle}
           </p>
         </div>
 
         <Card className="p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             <Input
-              label="Email"
+              label={t.login_email}
               type="email"
               name="email"
               autoComplete="email"
@@ -76,7 +78,7 @@ const Login = () => {
             />
 
             <Input
-              label="Password"
+              label={t.login_password}
               type="password"
               name="password"
               autoComplete="current-password"
@@ -92,18 +94,18 @@ const Login = () => {
               loading={submitting}
               className="w-full"
             >
-              {submitting ? "Signing in…" : "Sign in"}
+              {submitting ? t.login_submitting : t.login_submit}
             </Button>
           </form>
         </Card>
 
         <p className="mt-6 text-center text-sm text-neutral-500">
-          Don&apos;t have an account?{" "}
+          {t.login_noAccount}{" "}
           <Link
             to="/register"
             className="font-semibold text-brand-700 underline-offset-4 hover:underline"
           >
-            Create one
+            {t.login_createOne}
           </Link>
         </p>
       </div>

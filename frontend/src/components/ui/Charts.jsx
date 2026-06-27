@@ -15,6 +15,7 @@ export const AreaChart = ({
   stroke = "#16a34a",
   fill = "#16a34a",
   label = "Trend over time",
+  emptyText = "No data yet",
 }) => {
   const gradId = useId();
   const W = 100;
@@ -45,7 +46,7 @@ export const AreaChart = ({
         className="flex items-center justify-center text-sm text-neutral-400"
         style={{ height }}
       >
-        No data yet
+        {emptyText}
       </div>
     );
   }
@@ -160,11 +161,15 @@ export const Donut = ({ segments = [], size = 132, label = "Breakdown" }) => {
 };
 
 /* ---------- Horizontal bar list ---------- */
-export const BarList = ({ items = [], barColor = "bg-brand-500" }) => {
+export const BarList = ({
+  items = [],
+  barColor = "bg-brand-500",
+  emptyText = "No data yet",
+}) => {
   const max = Math.max(1, ...items.map((i) => i.value));
 
   if (items.length === 0) {
-    return <p className="text-sm text-neutral-400">No data yet</p>;
+    return <p className="text-sm text-neutral-400">{emptyText}</p>;
   }
 
   return (

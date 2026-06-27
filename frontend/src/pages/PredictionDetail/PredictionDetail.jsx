@@ -16,6 +16,7 @@ import Skeleton from "../../components/ui/Skeleton";
 import EmptyState from "../../components/ui/EmptyState";
 import AnimatedBar from "../../components/ui/AnimatedBar";
 import { useCountUp } from "../../hooks/useCountUp";
+import { useLanguage } from "../../context/LanguageContext";
 
 const severityTone = (value) => {
   const v = String(value || "").toLowerCase();
@@ -40,17 +41,17 @@ const barColor = {
   neutral: "bg-neutral-400",
 };
 
-const ConfidenceMeter = ({ value, tone }) => {
+const ConfidenceMeter = ({ value, tone, label = "Confidence" }) => {
   const count = useCountUp(value, { duration: 1200 });
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between text-sm">
-        <span className="font-medium text-neutral-600">Confidence</span>
+        <span className="font-medium text-neutral-600">{label}</span>
         <span className="font-semibold tabular-nums text-neutral-900">
           {count}%
         </span>
       </div>
-      <AnimatedBar value={value} label="Confidence" barClassName={barColor[tone]} />
+      <AnimatedBar value={value} label={label} barClassName={barColor[tone]} />
     </div>
   );
 };
@@ -97,6 +98,7 @@ const DetailSkeleton = () => (
 const PredictionDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -124,16 +126,15 @@ const PredictionDetail = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    if (!window.confirm("Delete this prediction? This cannot be undone."))
-      return;
+    if (!window.confirm(t.detail_confirmDelete)) return;
     setDeleting(true);
     try {
       await deletePrediction(id);
-      toast.success("Prediction deleted");
+      toast.success(t.detail_deleted);
       navigate("/history");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete prediction");
+      toast.error(t.detail_deleteFailed);
       setDeleting(false);
     }
   };
@@ -144,12 +145,12 @@ const PredictionDetail = () => {
         <Card>
           <EmptyState
             icon="alert"
-            title="Prediction not found"
-            description="This prediction may have been deleted or never existed."
+            title={t.detail_notFound_title}
+            description={t.detail_notFound_desc}
             action={
               <Button as={Link} to="/history">
                 <Icon name="history" className="h-4 w-4" />
-                Back to History
+                {t.detail_backToHistory}
               </Button>
             }
           />
@@ -165,21 +166,21 @@ const PredictionDetail = () => {
   return (
     <Page width="lg">
       <PageHeader
-        eyebrow="Record"
-        title="Prediction detail"
+        eyebrow={t.detail_eyebrow}
+        title={t.detail_title}
         action={
           <div className="flex items-center gap-2 print:hidden">
             <Button as={Link} to="/history" variant="ghost">
               <Icon name="arrowLeft" className="h-4 w-4" />
-              Back
+              {t.back}
             </Button>
             <Button variant="secondary" onClick={() => window.print()}>
               <Icon name="printer" className="h-4 w-4" />
-              Print
+              {t.print}
             </Button>
             <Button variant="danger" onClick={handleDelete} loading={deleting}>
               <Icon name="trash" className="h-4 w-4" />
-              Delete
+              {t.delete}
             </Button>
           </div>
         }
@@ -199,19 +200,23 @@ const PredictionDetail = () => {
                     className="h-5 w-5"
                   />
                 }
-                title={isPest ? "Pest detection" : "Disease prediction"}
+                title={isPest ? t.result_pestDetection : t.result_diseasePrediction}
               />
               <CardBody className="space-y-5">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
-                    {isPest ? "Pest" : "Disease"}
+                    {isPest ? t.pest : t.disease}
                   </p>
                   <p className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">
                     {data.class_name}
                   </p>
                 </div>
 
-                <ConfidenceMeter value={data.confidence} tone={confTone} />
+                <ConfidenceMeter
+                  value={data.confidence}
+                  tone={confTone}
+                  label={t.result_confidence}
+                />
 
                 <div className="flex flex-wrap gap-2">
                   <Badge
@@ -223,7 +228,7 @@ const PredictionDetail = () => {
                       />
                     }
                   >
-                    {isPest ? "Pest" : "Disease"}
+                    {isPest ? t.pest : t.disease}
                   </Badge>
                   <Badge
                     tone="neutral"
@@ -249,51 +254,51 @@ const PredictionDetail = () => {
             <Card>
               <CardHeader
                 icon={<Icon name="clipboard" className="h-5 w-5" />}
-                title="Recommendation"
-                description="Suggested actions based on the detection."
+                title={t.result_recommendation}
+                description={t.result_recommendationDesc}
               />
               <CardBody>
                 {rec ? (
                   <dl>
                     {rec.disease_name && (
-                      <DetailRow icon={isPest ? "bug" : "leaf"} label="Name">
+                      <DetailRow icon={isPest ? "bug" : "leaf"} label={t.result_name}>
                         {rec.disease_name}
                       </DetailRow>
                     )}
                     {rec.severity && (
-                      <DetailRow icon="alert" label="Severity">
+                      <DetailRow icon="alert" label={t.result_severity}>
                         <Badge tone={severityTone(rec.severity)}>
                           {rec.severity}
                         </Badge>
                       </DetailRow>
                     )}
                     {rec.description && (
-                      <DetailRow icon="fileText" label="Description">
+                      <DetailRow icon="fileText" label={t.result_descriptionLabel}>
                         {rec.description}
                       </DetailRow>
                     )}
                     {rec.treatment && (
-                      <DetailRow icon="shield" label="Treatment">
+                      <DetailRow icon="shield" label={t.result_treatment}>
                         {rec.treatment}
                       </DetailRow>
                     )}
                     {rec.organic_treatment && (
-                      <DetailRow icon="leaf" label="Organic treatment">
+                      <DetailRow icon="leaf" label={t.result_organicTreatment}>
                         {rec.organic_treatment}
                       </DetailRow>
                     )}
                     {rec.chemical_treatment && (
-                      <DetailRow icon="beaker" label="Chemical treatment">
+                      <DetailRow icon="beaker" label={t.result_chemicalTreatment}>
                         {rec.chemical_treatment}
                       </DetailRow>
                     )}
                     {rec.preventive_measures && (
-                      <DetailRow icon="shield" label="Preventive measures">
+                      <DetailRow icon="shield" label={t.result_preventiveMeasures}>
                         {rec.preventive_measures}
                       </DetailRow>
                     )}
                     {rec.monitoring_actions && (
-                      <DetailRow icon="eye" label="Monitoring actions">
+                      <DetailRow icon="eye" label={t.result_monitoringActions}>
                         {rec.monitoring_actions}
                       </DetailRow>
                     )}
@@ -301,8 +306,8 @@ const PredictionDetail = () => {
                 ) : (
                   <EmptyState
                     icon="clipboard"
-                    title="No recommendation stored"
-                    description="This prediction has no saved recommendation."
+                    title={t.detail_noRecommendation_title}
+                    description={t.detail_noRecommendation_desc}
                   />
                 )}
               </CardBody>

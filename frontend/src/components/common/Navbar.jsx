@@ -14,20 +14,14 @@ const navLinkClass = ({ isActive }) =>
       : "text-white/80 hover:bg-white/10 hover:text-white"
   );
 
-const authedLinks = [
-  { to: "/upload", label: "Upload", icon: "upload" },
-  { to: "/history", label: "History", icon: "history" },
-  { to: "/dashboard", label: "Dashboard", icon: "dashboard" },
-];
-
-const LanguageSelect = ({ language, setLanguage, className }) => (
+const LanguageSelect = ({ language, setLanguage, className, ariaLabel }) => (
   <div className={cn("relative", className)}>
     <Icon
       name="globe"
       className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/70"
     />
     <select
-      aria-label="Select language"
+      aria-label={ariaLabel}
       value={language}
       onChange={(e) => setLanguage(e.target.value)}
       className="h-9 w-full appearance-none rounded-lg border border-white/20 bg-white/10 py-1 pl-8 pr-7 text-sm font-medium text-white transition-colors duration-200 hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-0 [&>option]:text-neutral-900"
@@ -51,10 +45,16 @@ const LanguageSelect = ({ language, setLanguage, className }) => (
 
 const Navbar = () => {
   const { logout, isAuthenticated } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [open, setOpen] = useState(false);
 
   const closeMenu = () => setOpen(false);
+
+  const authedLinks = [
+    { to: "/upload", label: t.nav_upload, icon: "upload" },
+    { to: "/history", label: t.nav_history, icon: "history" },
+    { to: "/dashboard", label: t.nav_dashboard, icon: "dashboard" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-brand-800/40 bg-brand-700 text-white shadow-soft print:hidden">
@@ -69,14 +69,14 @@ const Navbar = () => {
             <Icon name="leaf" className="h-5 w-5" />
           </span>
           <span className="text-lg leading-tight tracking-tight">
-            Crop Disease AI
+            {t.brand}
           </span>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-1 md:flex">
           <NavLink to="/" end className={navLinkClass}>
-            Home
+            {t.nav_home}
           </NavLink>
 
           {isAuthenticated &&
@@ -92,6 +92,7 @@ const Navbar = () => {
           <LanguageSelect
             language={language}
             setLanguage={setLanguage}
+            ariaLabel={t.language_label}
             className="w-36"
           />
 
@@ -103,12 +104,12 @@ const Navbar = () => {
               className="ml-1 text-white/90 hover:bg-white/10 hover:text-white"
             >
               <Icon name="logout" className="h-4 w-4" />
-              Logout
+              {t.nav_logout}
             </Button>
           ) : (
             <>
               <NavLink to="/login" className={navLinkClass}>
-                Login
+                {t.nav_login}
               </NavLink>
               <Button
                 as={Link}
@@ -117,7 +118,7 @@ const Navbar = () => {
                 variant="secondary"
                 className="ml-1 border-transparent bg-white text-brand-700 hover:bg-brand-50"
               >
-                Sign up
+                {t.nav_signup}
               </Button>
             </>
           )}
@@ -129,7 +130,7 @@ const Navbar = () => {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls="mobile-menu"
-          aria-label="Toggle navigation menu"
+          aria-label={t.nav_toggleMenu}
           className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/10 md:hidden"
         >
           <svg
@@ -158,7 +159,7 @@ const Navbar = () => {
         >
           <div className="flex flex-col gap-1">
             <NavLink to="/" end className={navLinkClass} onClick={closeMenu}>
-              Home
+              {t.nav_home}
             </NavLink>
 
             {isAuthenticated &&
@@ -181,14 +182,14 @@ const Navbar = () => {
                   className={navLinkClass}
                   onClick={closeMenu}
                 >
-                  Login
+                  {t.nav_login}
                 </NavLink>
                 <NavLink
                   to="/register"
                   className={navLinkClass}
                   onClick={closeMenu}
                 >
-                  Sign up
+                  {t.nav_signup}
                 </NavLink>
               </>
             )}
@@ -198,6 +199,7 @@ const Navbar = () => {
             <LanguageSelect
               language={language}
               setLanguage={setLanguage}
+              ariaLabel={t.language_label}
               className="w-40"
             />
             {isAuthenticated && (
@@ -211,7 +213,7 @@ const Navbar = () => {
                 className="text-white/90 hover:bg-white/10 hover:text-white"
               >
                 <Icon name="logout" className="h-4 w-4" />
-                Logout
+                {t.nav_logout}
               </Button>
             )}
           </div>

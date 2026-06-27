@@ -9,6 +9,7 @@ import Skeleton from "../../components/ui/Skeleton";
 import Reveal from "../../components/ui/Reveal";
 import { AreaChart, Donut, BarList } from "../../components/ui/Charts";
 import { useCountUp } from "../../hooks/useCountUp";
+import { useLanguage } from "../../context/LanguageContext";
 
 const StatCard = ({ icon, label, value, suffix = "", decimals = 0 }) => {
   const display = useCountUp(value, { decimals });
@@ -71,14 +72,14 @@ const buildTrend = (items, days = 14) => {
   return [...buckets.entries()].map(([label, value]) => ({ label, value }));
 };
 
-const buildTypeSplit = (items) => [
+const buildTypeSplit = (items, labels) => [
   {
-    label: "Disease",
+    label: labels.disease,
     value: items.filter((i) => i.prediction_type === "disease").length,
     color: "#16a34a",
   },
   {
-    label: "Pest",
+    label: labels.pest,
     value: items.filter((i) => i.prediction_type === "pest").length,
     color: "#f59e0b",
   },
@@ -96,6 +97,7 @@ const buildTopDetections = (items, limit = 5) => {
 };
 
 const Dashboard = () => {
+  const { t } = useLanguage();
   const [data, setData] = useState(null);
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(true);
@@ -129,15 +131,18 @@ const Dashboard = () => {
   }, []);
 
   const trend = useMemo(() => buildTrend(history), [history]);
-  const typeSplit = useMemo(() => buildTypeSplit(history), [history]);
+  const typeSplit = useMemo(
+    () => buildTypeSplit(history, { disease: t.disease, pest: t.pest }),
+    [history, t.disease, t.pest]
+  );
   const topDetections = useMemo(() => buildTopDetections(history), [history]);
 
   return (
     <Page width="xl">
       <PageHeader
-        eyebrow="Overview"
-        title="Analytics dashboard"
-        description="A snapshot of your detection activity and model performance."
+        eyebrow={t.dashboard_eyebrow}
+        title={t.dashboard_title}
+        description={t.dashboard_description}
       />
 
       {/* Stat cards */}
@@ -153,21 +158,21 @@ const Dashboard = () => {
             <Reveal>
               <StatCard
                 icon="layers"
-                label="Total Predictions"
+                label={t.dashboard_totalPredictions}
                 value={data.total_predictions}
               />
             </Reveal>
             <Reveal delay={120}>
               <StatCard
                 icon="microscope"
-                label="Most Detected Disease"
+                label={t.dashboard_mostDetected}
                 value={data.most_detected_disease}
               />
             </Reveal>
             <Reveal delay={240}>
               <StatCard
                 icon="trendingUp"
-                label="Average Confidence"
+                label={t.dashboard_avgConfidence}
                 value={data.average_confidence}
                 suffix="%"
               />
@@ -182,14 +187,18 @@ const Dashboard = () => {
           <Card className="h-full">
             <CardHeader
               icon={<Icon name="trendingUp" className="h-5 w-5" />}
-              title="Detections over time"
-              description="Last 14 days"
+              title={t.dashboard_trendTitle}
+              description={t.dashboard_trendDesc}
             />
             <CardBody>
               {historyLoading ? (
                 <Skeleton className="h-40 w-full" />
               ) : (
-                <AreaChart data={trend} label="Detections over the last 14 days" />
+                <AreaChart
+                  data={trend}
+                  label={t.dashboard_trendTitle}
+                  emptyText={t.dashboard_noData}
+                />
               )}
             </CardBody>
           </Card>
@@ -199,13 +208,13 @@ const Dashboard = () => {
           <Card className="h-full">
             <CardHeader
               icon={<Icon name="layers" className="h-5 w-5" />}
-              title="By type"
+              title={t.dashboard_byType}
             />
             <CardBody>
               {historyLoading ? (
                 <Skeleton className="h-32 w-full" />
               ) : (
-                <Donut segments={typeSplit} label="Predictions by type" />
+                <Donut segments={typeSplit} label={t.dashboard_byType} />
               )}
             </CardBody>
           </Card>
@@ -217,8 +226,8 @@ const Dashboard = () => {
           <Card>
             <CardHeader
               icon={<Icon name="microscope" className="h-5 w-5" />}
-              title="Top detections"
-              description="Most frequent classes"
+              title={t.dashboard_topDetections}
+              description={t.dashboard_topDetectionsDesc}
             />
             <CardBody>
               {historyLoading ? (
@@ -228,7 +237,7 @@ const Dashboard = () => {
                   ))}
                 </div>
               ) : (
-                <BarList items={topDetections} />
+                <BarList items={topDetections} emptyText={t.dashboard_noData} />
               )}
             </CardBody>
           </Card>

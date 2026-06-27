@@ -7,6 +7,7 @@ import Button from "../../components/ui/Button";
 import Icon from "../../components/ui/Icon";
 import EmptyState from "../../components/ui/EmptyState";
 import Reveal from "../../components/ui/Reveal";
+import { useLanguage } from "../../context/LanguageContext";
 
 const severityTone = (severity) =>
   severity === "High"
@@ -15,17 +16,18 @@ const severityTone = (severity) =>
     ? "warning"
     : "success";
 
-const sections = [
-  { key: "description", title: "Description", icon: "fileText" },
-  { key: "treatment", title: "Treatment", icon: "shield" },
-  { key: "organic_treatment", title: "Organic Treatment", icon: "leaf" },
-  { key: "chemical_treatment", title: "Chemical Treatment", icon: "beaker" },
-  { key: "preventive_measures", title: "Preventive Measures", icon: "shield" },
-  { key: "monitoring_actions", title: "Monitoring Actions", icon: "eye" },
-];
-
 const Recommendation = () => {
   const location = useLocation();
+  const { t } = useLanguage();
+
+  const sections = [
+    { key: "description", title: t.rec_description, icon: "fileText" },
+    { key: "treatment", title: t.rec_treatment, icon: "shield" },
+    { key: "organic_treatment", title: t.rec_organicTreatment, icon: "leaf" },
+    { key: "chemical_treatment", title: t.rec_chemicalTreatment, icon: "beaker" },
+    { key: "preventive_measures", title: t.rec_preventiveMeasures, icon: "shield" },
+    { key: "monitoring_actions", title: t.rec_monitoringActions, icon: "eye" },
+  ];
 
   const recommendation =
     location.state ||
@@ -37,12 +39,12 @@ const Recommendation = () => {
         <Card>
           <EmptyState
             icon="clipboard"
-            title="No recommendation available"
-            description="Run a detection to generate a tailored treatment recommendation."
+            title={t.rec_empty_title}
+            description={t.rec_empty_desc}
             action={
               <Button as={Link} to="/upload">
                 <Icon name="upload" className="h-4 w-4" />
-                Go to Upload
+                {t.goToUpload}
               </Button>
             }
           />
@@ -53,7 +55,7 @@ const Recommendation = () => {
 
   return (
     <Page width="lg">
-      <PageHeader eyebrow="Treatment" title="Disease recommendation" />
+      <PageHeader eyebrow={t.rec_eyebrow} title={t.rec_title} />
 
       <div className="space-y-6">
         {/* Summary */}
@@ -65,7 +67,7 @@ const Recommendation = () => {
               </span>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
-                  Disease
+                  {t.rec_diseaseLabel}
                 </p>
                 <h2 className="mt-0.5 text-xl font-bold tracking-tight text-neutral-900">
                   {recommendation.disease_name}
@@ -77,7 +79,7 @@ const Recommendation = () => {
               icon={<Icon name="alert" className="h-3.5 w-3.5" />}
               className="self-start px-3 py-1.5 text-sm sm:self-center"
             >
-              {recommendation.severity} severity
+              {recommendation.severity} {t.rec_severitySuffix}
             </Badge>
           </CardBody>
         </Card>
